@@ -65,6 +65,17 @@ class Database:
 
         return orders
 
+    def cancel_orders_by_client_id(self, client_id):
+        status_list = ["wait_pay", "processing"]
+        orders = (self.session.query(Order)
+                  .options(joinedload(Order.order_products).joinedload(OrderProduct.product))
+                  .filter(Order.client_id == client_id, Order.status.in_(status_list)).all())
+        for order in orders:
+            order.status = "cancel"
+
+            for order_product in order.order_products:
+                order_product.product.count += order_product.count
+
     def get_order_ws_depend_by_id(self, id_order):
         order = self.session.query(Order).options(
             joinedload(Order.client),

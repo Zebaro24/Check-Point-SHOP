@@ -1,10 +1,7 @@
-from sqlalchemy.orm import joinedload
-
 from config import *
 
 from telebot import TeleBot, types
 
-from db_orm.order import Order
 from handlers.base_handler import BaseHandler
 from handlers.base_handler import set_handler_text, set_handler_status, set_handler_none, set_handler_callback
 
@@ -69,9 +66,15 @@ class AdminHandler(BaseHandler):
 
     @staticmethod
     @set_handler_text(TEXT_BUTTON_CANCEL)
-    def handle_text_cancel(user_id, bot, person):
-        if person.status in ["sending_product_photo", "sending_product_name", "sending_product_price",
-                             "sending_product_count"]:
+    def handle_text_cancel(user_id, bot, person, db):
+        if person.connected_client:
+            db.cancel_orders_by_client_id(person.connected_client_id)
+            bot.send_message(person.connected_client.user_id, "❌ Ваші замовлення були скасовані")
+            person.connected_client = None
+            db.session.commit()
+            bot.send_message(user_id, "❌ Замовлення були скасовані", reply_markup=bot.get_main_markup(user_id))
+            return
+        elif person.status and person.status.startswith("sending_product"):
             person.status = None
             person.product = None
         elif person.status and person.status.startswith("cancelled"):
@@ -140,11 +143,9 @@ class AdminHandler(BaseHandler):
 
     @staticmethod
     @set_handler_callback(["confirm"])
-    def handle_callback_confirm(data, bot, person, user_id, message, db: Database):
+    def handle_callback_confirm(data, bot, person, user_id, message, db: Database, call):
         _, doing, order_id = data.split()
-        order = db.session.query(Order).filter_by(id=order_id).options(
-            joinedload(Order.client)
-        ).first()
+        order = db.get_order_ws_depend_by_id(order_id)
 
         if order.assigned_admin_id:
             bot.edit_message_reply_markup(user_id, message.message_id, reply_markup=None)
@@ -153,6 +154,13 @@ class AdminHandler(BaseHandler):
 
         client = bot.clients[int(order.client.user_id)]
         if doing == "done":
+            if [ord_prod for ord_prod in order.order_products if ord_prod.product.count < ord_prod.count]:
+                bot.answer_callback_query(call.id, "🚫 Вже не вистачає товару\n🔍 Перевірте товар")
+                return
+
+            for order_product in order.order_products:
+                order_product.product.count -= order_product.count
+
             client.status = f"wait_pay {order.id}"
             client.assigned_admin_id = person.id
             order.status = "wait_pay"
@@ -167,6 +175,7 @@ class AdminHandler(BaseHandler):
 
             for admin_id in bot.admins:
                 bot.send_message(admin_id, f"👨‍💼 Адміністратор {person.name} взяв на себе замовлення від {client.name}")
+            bot.send_message(user_id, "🔄 Кнопки оновлені", reply_markup=bot.get_main_markup(user_id))
 
         elif doing == "cancel":
             client.status = None
@@ -193,9 +202,12 @@ class AdminHandler(BaseHandler):
             order.status = "done"
             db.session.commit()
             bot.send_message(order.client.user_id, "✅ Замовлення успішно завершено\nАдміністратор був відключений")
-            bot.send_message(user_id, "✅ Замовлення успішно завершено")
+            bot.send_message(user_id, "✅ Замовлення успішно завершено", reply_markup=bot.get_main_markup(user_id))
         elif doing == "cancel":
             order.status = "cancel"
+            order = db.get_order_ws_depend_by_id(order_id)
+            for order_product in order.order_products:
+                order_product.product.count += order_product.count
             db.session.commit()
             bot.send_message(order.client.user_id, "❌ Замовлення було скасовано\nАдміністратор був відключений")
             bot.send_message(user_id, "❌ Замовлення було скасовано")

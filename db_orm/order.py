@@ -37,7 +37,7 @@ class Order(Base):
         text += "🛍️ Список товарів:\n\n"
 
         for order_product in self.order_products:
-            text += (f"*📦 {order_product.product.name}*: {order_product.count}/{order_product.product.count} штук \\* "
+            text += (f"*📦 {order_product.product.name}*: {order_product.count} \\* "
                      f"{order_product.product.price} грн = *{order_product.count * order_product.product.price} грн*\n")
 
         text += f"\n💵 Загальна ціна: *{self.get_order_price()} грн*"

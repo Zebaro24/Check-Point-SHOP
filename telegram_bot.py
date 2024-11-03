@@ -27,9 +27,9 @@ class TelegramBot(TeleBot):
     @staticmethod
     def get_cancel_markup(leave=False):
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-        if not leave:
-            markup.add(types.KeyboardButton(TEXT_BUTTON_CANCEL))
-        elif leave:
+
+        markup.add(types.KeyboardButton(TEXT_BUTTON_CANCEL))
+        if leave:
             markup.add(types.KeyboardButton(ADMIN_TEXT_BUTTON_LEAVE))
         return markup
 

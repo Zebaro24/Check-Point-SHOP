@@ -139,7 +139,7 @@ class ClientHandler(BaseHandler):
 
     @staticmethod
     @set_handler_status("wait_pay")
-    def handle_photo_pay(photo, status, bot: TeleBot, person, db, user_id):
+    def handle_photo_pay(photo, status, bot, person, db, user_id):
         id_order = int(status.split()[1])
         order = db.get_order_ws_depend_by_id(id_order)
         order.photo_pay_id = photo.file_id
@@ -154,6 +154,8 @@ class ClientHandler(BaseHandler):
         confirm_cancel = types.InlineKeyboardButton(text="🚫", callback_data=f"confirm_ord cancel {order.id}")
         markup.add(confirm_done, confirm_cancel)
         bot.send_photo(order.assigned_admin.user_id, photo.file_id, text, parse_mode="Markdown", reply_markup=markup)
+        bot.send_message(order.assigned_admin.user_id, "🔄 Кнопки оновлені",
+                         reply_markup=bot.get_main_markup(order.assigned_admin.user_id))
 
     @staticmethod
     @set_handler_none

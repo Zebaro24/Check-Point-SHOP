@@ -37,7 +37,7 @@ class AdminHandler(BaseHandler):
                                      reply_markup=markup)
         elif doing == "sub":
             if product.count == 0:
-                bot.answer_callback_query(call.id, "Товар и так закончился")
+                bot.answer_callback_query(call.id, "⚠️ Товар вже закінчився")
                 return
             product.count -= 1
             db.session.commit()
@@ -46,7 +46,7 @@ class AdminHandler(BaseHandler):
                                      reply_markup=markup)
         elif doing == "edit":
             person.status = f"product_edit {product_id}"
-            bot.send_message(user_id, "Напишите количество", reply_markup=bot.get_cancel_markup())
+            bot.send_message(user_id, "✍️ Введіть кількість:", reply_markup=bot.get_cancel_markup())
         elif doing == "delete":
             product.count = -1
             db.session.commit()
@@ -59,12 +59,12 @@ class AdminHandler(BaseHandler):
         product = bot.products[int(product_id)]
 
         if not text.isnumeric():
-            bot.send_message(user_id, "Это не число")
+            bot.send_message(user_id, "🚫 Це не число")
             return
 
         product.count = int(text)
         db.session.commit()
-        bot.send_message(user_id, "Данные изменены", reply_markup=bot.self.get_main_markup(user_id))
+        bot.send_message(user_id, "✅ Дані змінено", reply_markup=bot.self.get_main_markup(user_id))
         person.status = None
 
     @staticmethod
@@ -79,63 +79,63 @@ class AdminHandler(BaseHandler):
         else:
             person.status = None
 
-        bot.send_message(user_id, "Действие было отменено", reply_markup=bot.get_main_markup(user_id))
+        bot.send_message(user_id, "❌ Дію було скасовано", reply_markup=bot.get_main_markup(user_id))
 
     @staticmethod
     @set_handler_text(ADMIN_TEXT_BUTTON_LEAVE)
     def handle_text_leave(user_id, bot, person, db):
         if person.connected_client:
-            bot.send_message(person.connected_client.user_id, "От вас отсоединился админ")
+            bot.send_message(person.connected_client.user_id, "👋 Від вас відключився адміністратор")
             person.connected_client = None
             db.session.commit()
-            bot.send_message(user_id, "Вы отсоединились от клиента", reply_markup=bot.get_main_markup(user_id))
+            bot.send_message(user_id, "🔌 Ви відключилися від клієнта", reply_markup=bot.get_main_markup(user_id))
         else:
-            bot.send_message(user_id, "Вы небыли подключены к клиенту", reply_markup=bot.get_main_markup(user_id))
+            bot.send_message(user_id, "⚠️ Ви не були підключені до клієнта", reply_markup=bot.get_main_markup(user_id))
 
     @staticmethod
     @set_handler_text(ADMIN_TEXT_BUTTON_ADD_PRODUCT)
     def handle_text_add_product(user_id, bot, person):
         person.product = Product()
-        bot.send_message(user_id, "Фото товара:", reply_markup=bot.get_cancel_markup())
+        bot.send_message(user_id, "🖼️ Фото товару:", reply_markup=bot.get_cancel_markup())
         person.status = "sending_product_photo"
 
     @staticmethod
     @set_handler_status("sending_product_photo")
     def handle_photo_product(photo, user_id, bot, person):
         person.product.photo_id = photo.file_id
-        bot.send_message(user_id, "Название товара:", reply_markup=bot.get_cancel_markup())
+        bot.send_message(user_id, "🏷️ Назва товару:", reply_markup=bot.get_cancel_markup())
         person.status = "sending_product_name"
 
     @staticmethod
     @set_handler_status("sending_product_name")
     def handle_text_name_product(text, user_id, bot, person):
         person.product.name = text
-        bot.send_message(user_id, "Цена товара:", reply_markup=bot.get_cancel_markup())
+        bot.send_message(user_id, "💰 Ціна товару:", reply_markup=bot.get_cancel_markup())
         person.status = "sending_product_price"
 
     @staticmethod
     @set_handler_status("sending_product_price")
     def handle_text_price_product(text, user_id, bot, person):
         if not text.replace(".", "", 1).isnumeric():
-            bot.send_message(user_id, "Неправильная форма ввода!\nПример: 2.25")
-            bot.send_message(user_id, "Цена товара:", reply_markup=bot.get_cancel_markup())
+            bot.send_message(user_id, "🚫 Неправильний формат введення!\nПриклад: 2.25")
+            bot.send_message(user_id, "💰 Ціна товару:", reply_markup=bot.get_cancel_markup())
             return
         person.product.price = float(text)
-        bot.send_message(user_id, "Количество товара:", reply_markup=types.ForceReply())
+        bot.send_message(user_id, "📦 Кількість товару:", reply_markup=types.ForceReply())
         person.status = "sending_product_count"
 
     @staticmethod
     @set_handler_status("sending_product_count")
     def handle_text_count_product(text, user_id, bot, person, db: Database):
         if not text.isnumeric():
-            bot.send_message(user_id, "Неправильная форма ввода!\nПример: 10")
-            bot.send_message(user_id, "Количество товара:", reply_markup=bot.get_cancel_markup())
+            bot.send_message(user_id, "🚫 Неправильний формат введення!\nПриклад: 10")
+            bot.send_message(user_id, "📦 Кількість товару:", reply_markup=bot.get_cancel_markup())
             return
         person.product.count = int(text)
         db.session.add(person.product)
         db.session.commit()
         bot.products[person.product.id] = person.product
-        bot.send_message(user_id, "Товар был сохранен!", reply_markup=bot.get_main_markup(user_id))
+        bot.send_message(user_id, "✅ Товар збережено!", reply_markup=bot.get_main_markup(user_id))
         person.status = None
 
     @staticmethod
@@ -148,7 +148,7 @@ class AdminHandler(BaseHandler):
 
         if order.assigned_admin_id:
             bot.edit_message_reply_markup(user_id, message.message_id, reply_markup=None)
-            bot.send_message(user_id, "Действия над заказом уже приняты", reply_markup=bot.get_main_markup(user_id))
+            bot.send_message(user_id, "⚠️ Дії над замовленням вже прийняті", reply_markup=bot.get_main_markup(user_id))
             return
 
         client = bot.clients[int(order.client.user_id)]
@@ -159,14 +159,14 @@ class AdminHandler(BaseHandler):
             order.assigned_admin_id = person.id
 
             db.session.commit()
-            text = "Заказ был принят!\nИ так же вы подключены к чату админа\n"
-            text += f"Сума заказа: *{order.price} грн*"
+            text = "✅ Замовлення прийняте!\nІ ви також підключені до чату з адміністратором\n"
+            text += f"💵 Сума замовлення: *{order.price} грн*"
             bot.send_message(order.client.user_id, text, parse_mode="Markdown")
             bot.send_message(order.client.user_id, MESSAGE_TO_PAY)
             bot.edit_message_reply_markup(user_id, message.message_id, reply_markup=None)
 
             for admin_id in bot.admins:
-                bot.send_message(admin_id, f"Админ {person.name} взял на себя заказ {client.name}")
+                bot.send_message(admin_id, f"👨‍💼 Адміністратор {person.name} взяв на себе замовлення від {client.name}")
 
         elif doing == "cancel":
             client.status = None
@@ -175,11 +175,11 @@ class AdminHandler(BaseHandler):
             db.session.commit()
 
             bot.edit_message_reply_markup(user_id, message.message_id, reply_markup=None)
-            bot.send_message(order.client.user_id, "Админ отклонил заказ")
-            bot.send_message(user_id, "Напишите причину отмены для клиента:", reply_markup=types.ForceReply())
+            bot.send_message(order.client.user_id, "❌ Адміністратор відхилив замовлення")
+            bot.send_message(user_id, "✍️ Вкажіть причину відміни для клієнта:", reply_markup=types.ForceReply())
 
             for admin_id in bot.admins:
-                bot.send_message(admin_id, f"Админ {person.name} отклонил заказ {client.name}")
+                bot.send_message(admin_id, f"❌ Адміністратор {person.name} відхилив замовлення від {client.name}")
 
     @staticmethod
     @set_handler_callback(["confirm_ord"])
@@ -192,13 +192,13 @@ class AdminHandler(BaseHandler):
         if doing == "done":
             order.status = "done"
             db.session.commit()
-            bot.send_message(order.client.user_id, "Заказ завершен успешно\nАдмин был отключен")
-            bot.send_message(user_id, "Заказ завершен успешно")
+            bot.send_message(order.client.user_id, "✅ Замовлення успішно завершено\nАдміністратор був відключений")
+            bot.send_message(user_id, "✅ Замовлення успішно завершено")
         elif doing == "cancel":
             order.status = "cancel"
             db.session.commit()
-            bot.send_message(order.client.user_id, "Заказ был отменен\nАдмин был отключен")
-            bot.send_message(user_id, "Заказ был отменен")
+            bot.send_message(order.client.user_id, "❌ Замовлення було скасовано\nАдміністратор був відключений")
+            bot.send_message(user_id, "❌ Замовлення було скасовано")
 
     @staticmethod
     @set_handler_status("cancelled")
@@ -206,7 +206,7 @@ class AdminHandler(BaseHandler):
         chat_id = int(person.status.split()[1])
         person.status = None
         bot.send_message(chat_id, f"[{person.name}]: {text}")
-        bot.send_message(user_id, "Сообщение отправлено!", reply_markup=bot.get_main_markup(user_id))
+        bot.send_message(user_id, "📨 Повідомлення надіслано!", reply_markup=bot.get_main_markup(user_id))
 
     @staticmethod
     @set_handler_none
@@ -217,16 +217,16 @@ class AdminHandler(BaseHandler):
                 if order.get_admin_button_text() == message.text:
                     person.connected_client = order.client
                     db.session.commit()
-                    bot.send_message(user_id, "Клиент был подключен!", reply_markup=bot.get_cancel_markup(True))
-                    bot.send_message(order.client.user_id, f"К вам подключился админ [{person.name}]")
+                    bot.send_message(user_id, "🔗 Клієнт був підключений!", reply_markup=bot.get_cancel_markup(True))
+                    bot.send_message(order.client.user_id, f"👤 До вас підключився адміністратор [{person.name}]")
                     return
-            bot.send_message(user_id, "Такого заказа нет!", reply_markup=bot.get_main_markup(user_id))
+            bot.send_message(user_id, "🚫 Такого замовлення немає!", reply_markup=bot.get_main_markup(user_id))
             return
 
         if message.text and person.connected_client:
             bot.send_message(person.connected_client.user_id, f"[{person.name}] : {message.text}")
             return
 
-        print(f"Нету обработчика у админа")
+        print(f"🚫 У адміністратора немає обробника")
         print(message)
         bot.send_possibilities(message.chat.id, True)

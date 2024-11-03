@@ -53,9 +53,9 @@ class TelegramBot(TeleBot):
 
     def send_possibilities(self, chat_id, admin=False):
         if admin:
-            self.send_message(chat_id, "Вот ваши возможности Admin:", reply_markup=self.get_main_markup(chat_id))
+            self.send_message(chat_id, "👉 Ось ваші можливості, Admin:", reply_markup=self.get_main_markup(chat_id))
             return
-        self.send_message(chat_id, "Вот ваши возможности:", reply_markup=self.main_markup)
+        self.send_message(chat_id, "🌟 Ось ваші можливості:", reply_markup=self.main_markup)
 
     # <--- Handlers --->
     def start_command(self, message: types.Message):
@@ -126,31 +126,31 @@ class TelegramBot(TeleBot):
         # Настройка всех обработчиков команд
         @self.message_handler(commands=['start', 'help'])
         def handle_start_help(message: types.Message):
-            print(f"Старт от {message.chat.first_name}")
+            print(f"🚀 Старт від {message.chat.first_name}")
             self.start_command(message)
 
         @self.message_handler(func=lambda message: True)
         def handle_all_messages(message: types.Message):
-            print(f"Сообщение от {message.chat.first_name} содержит \"{message.text}\"")
+            print(f"💬 Повідомлення від {message.chat.first_name} містить: \"{message.text}\"")
             self.handle_text_message(message)
 
         @self.message_handler(content_types=['photo'])
         def handle_photo(message: types.Message):
-            print(f"Фото от {message.chat.first_name} фото {message.photo[0]}")
+            print(f"🖼️ Фото від {message.chat.first_name}: {message.photo[0]}")
             self.handle_photo_message(message)
 
         @self.callback_query_handler(func=lambda call: True)
         def handle_callback(call):
-            print(f"Нажатие кнопки от {call.message.chat.first_name} на {call.data}")
+            print(f"🖱️ Натискання кнопки від {call.message.chat.first_name} на {call.data}")
             self.handle_callback_query(call)
 
     def start_polling(self):
         # Запуск бота
-        print("Бот запущен!")
+        print("✅ Бот запущений!")
         try:
             self.polling()  # Убрать restart_on_change
         except KeyboardInterrupt:
-            print("Бот был остановлен!")
+            print("🛑 Бот зупинений!")
         finally:
             self.db.session.close()
 

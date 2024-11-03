@@ -16,12 +16,12 @@ class Product(Base):
     count: Mapped[int]
 
     def get_caption(self, count_buy=None):
-        caption = f"Товар: *{self.name}*\n\n"
-        caption += f"Цена: *{self.price} грн*\n"
-        caption += f"В наличии: *{self.count} позиций*"
+        caption = f"📦 Товар: *{self.name}*\n\n"
+        caption += f"💰 Ціна: *{self.price} грн*\n"
+        caption += f"🟢 В наявності: *{self.count} позицій*"
 
         if count_buy:
-            caption += f"\n\nВ корзине: *{count_buy} штук*"
+            caption += f"\n\n🛒 У кошику: *{count_buy} шт.*"
         return caption
 
     def get_markup_client(self, count_buy=False):

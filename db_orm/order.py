@@ -31,16 +31,16 @@ class Order(Base):
         return total_amount
 
     def get_order_list(self):
-        text = f"*Заказ номер {self.id}*\n"
-        text += f"Клиент: {self.client.name}\n"
-        text += f"Номер комнаты: *{self.client.location}*\n\n"
-        text += "Список товаров:\n\n"
+        text = f"*🧾 Замовлення номер {self.id}*\n"
+        text += f"👤 Клієнт:  {self.client.name}\n"
+        text += f"🏠 Номер кімнати: *{self.client.location}*\n\n"
+        text += "🛍️ Список товарів:\n\n"
 
         for order_product in self.order_products:
-            text += (f"*{order_product.product.name}*: {order_product.count}/{order_product.product.count} штук \\* "
+            text += (f"*📦 {order_product.product.name}*: {order_product.count}/{order_product.product.count} штук \\* "
                      f"{order_product.product.price} грн = *{order_product.count * order_product.product.price} грн*\n")
 
-        text += f"\nОбщая цена: *{self.get_order_price()} грн*"
+        text += f"\n💵 Загальна ціна: *{self.get_order_price()} грн*"
         return text
 
     def get_admin_button_text(self):

@@ -26,9 +26,9 @@ class ClientHandler(BaseHandler):
     @staticmethod
     @set_handler_text(TEXT_BUTTON_ACCOUNT)
     def handle_text_account(user_id, bot: TeleBot, person):
-        text = f"Ваше ім'я: {person.name}\n"
-        text += f"Ваша кімната: {person.location}\n\n"
-        text += "Ось ваші дії по зміні профілю:"
+        text = f"👤 Ваше ім'я: {person.name}\n"
+        text += f"🏠 Ваша кімната: {person.location}\n\n"
+        text += "🔧 Ось ваші дії для зміни профілю:"
 
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
         markup.add(types.KeyboardButton(ACCOUNT_TEXT_BUTTON_EDIT_NAME))
@@ -40,13 +40,13 @@ class ClientHandler(BaseHandler):
     @set_handler_text(ACCOUNT_TEXT_BUTTON_EDIT_NAME)
     def handle_text_account_name(user_id, bot, person):
         person.status = "account_edit name"
-        bot.send_message(user_id, "Введіть нове ім'я:", reply_markup=bot.get_cancel_markup())
+        bot.send_message(user_id, "✍️ Введіть нове ім'я:", reply_markup=bot.get_cancel_markup())
 
     @staticmethod
     @set_handler_text(ACCOUNT_TEXT_BUTTON_EDIT_LOCATION)
     def handle_text_account_location(user_id, bot, person):
         person.status = "account_edit location"
-        bot.send_message(user_id, "Введіть нову кімнату:", reply_markup=bot.get_cancel_markup())
+        bot.send_message(user_id, "✍️ Введіть нову кімнату:", reply_markup=bot.get_cancel_markup())
 
     @staticmethod
     @set_handler_status("account_edit")
@@ -57,13 +57,13 @@ class ClientHandler(BaseHandler):
         elif doing == "location":
             person.location = text
         db.session.commit()
-        bot.send_message(user_id, "Данні були змінені", reply_markup=bot.get_main_markup())
+        bot.send_message(user_id, "✅ Дані були змінені", reply_markup=bot.get_main_markup())
         person.status = None
 
     @staticmethod
     @set_handler_text(TEXT_BUTTON_CANCEL)
     def handle_text_cancel(user_id, bot, person):
-        bot.send_message(user_id, "Действие было отменено", reply_markup=bot.get_main_markup())
+        bot.send_message(user_id, "❌ Дію було скасовано", reply_markup=bot.get_main_markup())
         person.status = None
 
     @staticmethod
@@ -71,7 +71,7 @@ class ClientHandler(BaseHandler):
     def handle_callback_edit(data, bot, person, user_id, message, call):
         doing, product_id = data.split()
         if person.status == "wait_confirm":
-            bot.answer_callback_query(call.id, "Заказ уже на подтверждении!")
+            bot.answer_callback_query(call.id, "⚠️ Замовлення вже на підтвердженні!")
             return
         product_id = int(product_id)
         product = bot.products[product_id]
@@ -87,7 +87,7 @@ class ClientHandler(BaseHandler):
                 person.order[product] = 0
 
             if product.count < person.order[product] + 1:
-                bot.answer_callback_query(call.id, "Мы не можем доставить товара больше чем есть")
+                bot.answer_callback_query(call.id, "🚫 Ми не можемо доставити більше товару, ніж є в наявності")
                 if not person.order[product]:
                     del person.order[product]
                 return
@@ -104,24 +104,24 @@ class ClientHandler(BaseHandler):
         try:
             bot.edit_message_caption(caption, user_id, message.message_id, parse_mode="Markdown", reply_markup=markup)
         except telebot.apihelper.ApiTelegramException:
-            bot.answer_callback_query(call.id, "Кнопка нажата!")
+            bot.answer_callback_query(call.id, "🖱️ Кнопка натиснута!")
 
     @staticmethod
     @set_handler_text(TEXT_BUTTON_BUY)
     def handle_text_buy(user_id, bot, person):
         if not person.order:
-            bot.send_message(user_id, "Заказ пуст")
+            bot.send_message(user_id, "📭 Замовлення порожнє")
             return
         text = person.get_order_list()
         markup = types.InlineKeyboardMarkup()
-        markup.add(types.InlineKeyboardButton(text="Отправить на подтверждение", callback_data="buy"))
+        markup.add(types.InlineKeyboardButton(text="📤 Відправити на підтвердження", callback_data="buy"))
         bot.send_message(user_id, text, parse_mode="Markdown", reply_markup=markup)
 
     @staticmethod
     @set_handler_callback(["buy"])
     def handle_callback_buy(bot, person, user_id, message, db):
         if not person.order:
-            bot.send_message(user_id, "Заказ пуст!")
+            bot.send_message(user_id, "📭 Замовлення порожнє!")
             return
         text = person.get_order_list(True)
         order = db.add_order_by_client(person)
@@ -135,7 +135,7 @@ class ClientHandler(BaseHandler):
 
         person.status = "wait_confirm"
         bot.edit_message_reply_markup(user_id, message.message_id, reply_markup=None)
-        bot.send_message(user_id, "Заказ отправлен на подтверждение!")
+        bot.send_message(user_id, "✅ Замовлення відправлено на підтвердження!")
 
     @staticmethod
     @set_handler_status("wait_pay")
@@ -148,7 +148,7 @@ class ClientHandler(BaseHandler):
         person.status = None
         text = order.get_order_list()
         bot.send_photo(user_id, photo.file_id, text, parse_mode="Markdown")
-        bot.send_message(user_id, "Ожидайте доставки")
+        bot.send_message(user_id, "⏳ Очікуйте на доставку")
         markup = types.InlineKeyboardMarkup()
         confirm_done = types.InlineKeyboardButton(text="☑️", callback_data=f"confirm_ord done {order.id}")
         confirm_cancel = types.InlineKeyboardButton(text="🚫", callback_data=f"confirm_ord cancel {order.id}")
@@ -159,11 +159,11 @@ class ClientHandler(BaseHandler):
     @set_handler_none
     def handle_none(bot, message, person):
         if person.status:
-            bot.send_message(message.chat.id, "Завершите действие")
+            bot.send_message(message.chat.id, "🔚 Завершіть дію")
             return
         if message.text and person.assigned_admin:
             bot.send_message(person.assigned_admin.user_id, f"[{person.name}:{person.id}] : {message.text}")
             return
-        print(f"Нету обработчика у клиента")
+        print(f"🚫 У клієнта немає обробника")
         print(message)
         bot.send_possibilities(message.chat.id)

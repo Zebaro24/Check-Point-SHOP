@@ -30,14 +30,14 @@ class Client(Base):
 
     def get_order_list(self, to_admin=False):
         if to_admin:
-            text = f"_Список товаров_ *{self.name} ({self.location})* _:_\n\n"
+            text = f"_📋 Список товарів_ *{self.name} ({self.location})* _:_\n\n"
         else:
-            text = "*Список товаров:*\n\n"
+            text = "*📋 Список товарів:*\n\n"
         for product, count in self.order.items():
             print(product, count)
-            text += f"{product.name}: {count}/{product.count} штук \\* {product.price} грн = *{count * product.price} грн*\n"
+            text += f"📦 {product.name}: {count}/{product.count} штук \\* {product.price} грн = *{count * product.price} грн*\n"
 
-        text += f"\nОбщая цена: *{self.get_order_price()} грн*"
+        text += f"\n💵 Загальна ціна: *{self.get_order_price()} грн*"
         return text
 
     def __repr__(self):

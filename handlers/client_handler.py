@@ -24,11 +24,47 @@ class ClientHandler(BaseHandler):
             bot.send_photo(message.chat.id, product.photo_id, caption, "Markdown", reply_markup=markup)
 
     @staticmethod
-    @set_handler_text(TEXT_BUTTON_CANCEL)
-    def handle_text_cancel(user_id, bot, person):
+    @set_handler_text(TEXT_BUTTON_ACCOUNT)
+    def handle_text_account(user_id, bot: TeleBot, person):
+        text = f"Ваше ім'я: {person.name}\n"
+        text += f"Ваша кімната: {person.location}\n\n"
+        text += "Ось ваші дії по зміні профілю:"
+
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        markup.add(types.KeyboardButton(ACCOUNT_TEXT_BUTTON_EDIT_NAME))
+        markup.add(types.KeyboardButton(ACCOUNT_TEXT_BUTTON_EDIT_LOCATION))
+
+        bot.send_message(user_id, text, reply_markup=markup)
+
+    @staticmethod
+    @set_handler_text(ACCOUNT_TEXT_BUTTON_EDIT_NAME)
+    def handle_text_account_name(user_id, bot, person):
+        person.status = "account_edit name"
+        bot.send_message(user_id, "Введіть нове ім'я:", reply_markup=bot.get_cancel_markup())
+
+    @staticmethod
+    @set_handler_text(ACCOUNT_TEXT_BUTTON_EDIT_LOCATION)
+    def handle_text_account_location(user_id, bot, person):
+        person.status = "account_edit location"
+        bot.send_message(user_id, "Введіть нову кімнату:", reply_markup=bot.get_cancel_markup())
+
+    @staticmethod
+    @set_handler_status("account_edit")
+    def handle_text_account_edit(status, text, user_id, db, bot, person):
+        _, doing = status.split()
+        if doing == "name":
+            person.name = text
+        elif doing == "location":
+            person.location = text
+        db.session.commit()
+        bot.send_message(user_id, "Данні були змінені", reply_markup=bot.get_main_markup())
         person.status = None
 
-        bot.send_message(user_id, "Действие было отменено", reply_markup=bot.get_main_markup(user_id))
+    @staticmethod
+    @set_handler_text(TEXT_BUTTON_CANCEL)
+    def handle_text_cancel(user_id, bot, person):
+        bot.send_message(user_id, "Действие было отменено", reply_markup=bot.get_main_markup())
+        person.status = None
 
     @staticmethod
     @set_handler_callback(["sub", "clear", "add"])

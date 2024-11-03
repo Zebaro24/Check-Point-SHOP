@@ -1,9 +1,9 @@
 from os import getenv
 
-DATABASE_URL = getenv("DATABASE_URL")
+DATABASE_URL = getenv('DATABASE_URL')
 TELEGRAM_TOKEN = getenv('TELEGRAM_TOKEN')
 
-START_STICKER = "CAACAgIAAxkBAAErA1FnGiVexxd8gYh2K55CsLbNwhLPDgAChwIAAladvQpC7XQrQFfQkDYE"
+START_STICKER = 'CAACAgIAAxkBAAErA1FnGiVexxd8gYh2K55CsLbNwhLPDgAChwIAAladvQpC7XQrQFfQkDYE'
 START_MESSAGE_FIRST = "Привет"
 START_MESSAGE_SECOND = "Второе сообщение"
 REGISTRATION_MESSAGE = "Для регистрации отправьте номер вашей комнаты"
@@ -11,6 +11,9 @@ REGISTRATION_MESSAGE = "Для регистрации отправьте ном�
 TEXT_BUTTON_PRODUCTS = "🛍️ Подивитися товари 👀"
 TEXT_BUTTON_ACCOUNT = "👤 Профіль 👤"
 TEXT_BUTTON_BUY = "📦 Заказати товари 📋"
+
+ACCOUNT_TEXT_BUTTON_EDIT_NAME = "📝 Змінити ім'я профілю 👤"
+ACCOUNT_TEXT_BUTTON_EDIT_LOCATION = "🔢 Змінити номер кімнати 🏢"
 
 TEXT_BUTTON_CANCEL = "❌ Відмінити 🔙"
 ADMIN_TEXT_BUTTON_ADD_PRODUCT = "✏️ Додати товар 📦"

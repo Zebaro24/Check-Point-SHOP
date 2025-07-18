@@ -61,7 +61,7 @@ class AdminHandler(BaseHandler):
 
         product.count = int(text)
         db.session.commit()
-        bot.send_message(user_id, "✅ Дані змінено", reply_markup=bot.self.get_main_markup(user_id))
+        bot.send_message(user_id, "✅ Дані змінено", reply_markup=bot.get_main_markup(user_id))
         person.status = None
 
     @staticmethod

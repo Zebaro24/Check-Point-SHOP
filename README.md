@@ -40,7 +40,7 @@ Telegram bot for university shop operations, enabling students to order products
 
 1. **Clone repository**
    ```bash
-   git clone https://github.com/username/checkpoint-shop-bot.git
+   git clone https://github.com/Zebaro24/Check-Point-SHOP.git
    cd checkpoint-shop-bot
    ```
 
@@ -69,7 +69,7 @@ Telegram bot for university shop operations, enabling students to order products
 ## 🚀 Launching the Bot
 
 ```bash
-python telegram_bot.py
+python runner.py
 ```
 
 ### Client Flow

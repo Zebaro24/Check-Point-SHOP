@@ -105,13 +105,11 @@ telegram_bot.py         # Bot entry point
 ## 📸 Interface Preview
 | Student View | Admin Panel |
 |--------------|-------------|
-| ![Student UI](https://placehold.co/300x150/3d5a80/ffffff?text=Student+Dashboard) | ![Admin UI](https://placehold.co/300x150/293241/ffffff?text=Admin+Dashboard) |
-| ![Flow](https://placehold.co/300x150/98c1d9/000000?text=Course+Progress) | ![Management](https://placehold.co/300x150/ee6c4d/ffffff?text=User+Management) |
-
+| <img src="https://github.com/user-attachments/assets/bd9f2255-8290-4d50-82fb-b9272e94073c" alt="Student UI" width="400" /> | <img src="https://github.com/user-attachments/assets/e95855d3-b914-48f2-8c0b-14d3502c8bab" alt="Admin UI" width="400" /> |
+| <img src="https://github.com/user-attachments/assets/33c26dbc-9b02-4df7-9885-54f5c695f56e" alt="Progress" width="400" /> | <img src="https://github.com/user-attachments/assets/b6e8df7a-33d1-4980-8e72-8d4c1cd83894" alt="Manage" width="400" /> |
 
 ---
 
 ## 📬 Contact
 - **Developer**: Denys Shcherbatyi
 - **Email**: zebaro.work@gmail.com
-- **GitHub**: [github.com/Zebaro24](https://github.com/Zebaro24)

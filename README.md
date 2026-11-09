@@ -5,18 +5,18 @@
 [![Python](https://img.shields.io/badge/Python-3.x-%233776AB?logo=python)](https://python.org/)
 [![Telegram](https://img.shields.io/badge/Telegram_Bot_API-4.23.0-%2326A5E4?logo=telegram)](https://core.telegram.org/bots/api)
 
-Telegram bot for university shop operations, enabling students to order products with dormitory delivery. Features role-based access, payment processing, and real-time order tracking.
+Telegram bot for a shop's ordering and delivery: customers browse the catalog and order products delivered to their room. Features role-based access, payment processing, and real-time order tracking.
 
 ---
 
 ## ✨ Core Features
 - **Role System**:
-    - 👤 Student registration with room details
+    - 👤 Customer registration with delivery details
     - 👨‍💼 Admin panel for inventory/order management
 - **Shopping Experience**:
     - 🛍️ Product catalog browsing with intuitive navigation
     - 📦 Order creation with quantity selection
-    - 🏠 Dormitory room delivery
+    - 🏠 Delivery to the customer's room
 - **Payment & Tracking**:
     - 💳 Screenshot-based payment confirmation
     - 📊 Real-time order status updates
@@ -89,7 +89,7 @@ python runner.py
 ```bash
 handlers/
 ├── admin_handler.py    # Admin commands processing
-├── client_handler.py   # Student interactions
+├── client_handler.py   # Customer interactions
 └── base_handler.py     # Core handler logic
 db_orm/
 ├── product.py          # Product data model
@@ -103,9 +103,9 @@ telegram_bot.py         # Bot entry point
 ---
 
 ## 📸 Interface Preview
-| Student View | Admin Panel |
+| Customer View | Admin Panel |
 |--------------|-------------|
-| <img src="https://github.com/user-attachments/assets/bd9f2255-8290-4d50-82fb-b9272e94073c" alt="Student UI" width="400" /> | <img src="https://github.com/user-attachments/assets/e95855d3-b914-48f2-8c0b-14d3502c8bab" alt="Admin UI" width="400" /> |
+| <img src="https://github.com/user-attachments/assets/bd9f2255-8290-4d50-82fb-b9272e94073c" alt="Customer UI" width="400" /> | <img src="https://github.com/user-attachments/assets/e95855d3-b914-48f2-8c0b-14d3502c8bab" alt="Admin UI" width="400" /> |
 | <img src="https://github.com/user-attachments/assets/33c26dbc-9b02-4df7-9885-54f5c695f56e" alt="Progress" width="400" /> | <img src="https://github.com/user-attachments/assets/b6e8df7a-33d1-4980-8e72-8d4c1cd83894" alt="Manage" width="400" /> |
 
 ---
